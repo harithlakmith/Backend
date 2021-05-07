@@ -7,11 +7,17 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TranspotationTicketBooking.Models;
+using Microsoft.Data.SqlClient;
+using Newtonsoft.Json;
+using System.Web;
+using System.Data;
+using System.Collections;
+
 
 namespace TranspotationTicketBooking.Controllers
 {
-    [Route("[controller]")]
     //[Authorize]
+    [Route("[controller]")]
     [ApiController]
     public class TicketController : ControllerBase
     {
