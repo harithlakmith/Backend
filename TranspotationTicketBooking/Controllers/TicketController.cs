@@ -17,7 +17,7 @@ using System.Collections;
 namespace TranspotationTicketBooking.Controllers
 {
     //[Authorize]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     [ApiController]
     public class TicketController : ControllerBase
     {

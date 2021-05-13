@@ -13,7 +13,7 @@ using Microsoft.AspNetCore.Identity;
 namespace TranspotationTicketBooking.Controllers
 {
     [Authorize(Roles = "Passenger , Administrator")]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     [ApiController]
     public class PassengerController : ControllerBase
     {

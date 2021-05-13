@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -11,50 +10,49 @@ using TranspotationTicketBooking.Models;
 namespace TranspotationTicketBooking.Controllers
 {
     [Route("api/[controller]")]
-    [Authorize(Roles = "BusController , Administrator")]
     [ApiController]
-    public class RouteController : ControllerBase
+    public class TicketsController : ControllerBase
     {
         private readonly TicketBookingDBContext _context;
 
-        public RouteController(TicketBookingDBContext context)
+        public TicketsController(TicketBookingDBContext context)
         {
             _context = context;
         }
 
-        // GET: api/Route
+        // GET: api/Tickets
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Route>>> GetRoute()
+        public async Task<ActionResult<IEnumerable<Ticket>>> GetTicket()
         {
-            return await _context.Route.ToListAsync();
+            return await _context.Ticket.ToListAsync();
         }
 
-        // GET: api/Route/5
+        // GET: api/Tickets/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Route>> GetRoute(long id)
+        public async Task<ActionResult<Ticket>> GetTicket(long id)
         {
-            var route = await _context.Route.FindAsync(id);
+            var ticket = await _context.Ticket.FindAsync(id);
 
-            if (route == null)
+            if (ticket == null)
             {
                 return NotFound();
             }
 
-            return route;
+            return ticket;
         }
 
-        // PUT: api/Route/5
+        // PUT: api/Tickets/5
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutRoute(long id, Route route)
+        public async Task<IActionResult> PutTicket(long id, Ticket ticket)
         {
-            if (id != route.RId)
+            if (id != ticket.TId)
             {
                 return BadRequest();
             }
 
-            _context.Entry(route).State = EntityState.Modified;
+            _context.Entry(ticket).State = EntityState.Modified;
 
             try
             {
@@ -62,7 +60,7 @@ namespace TranspotationTicketBooking.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!RouteExists(id))
+                if (!TicketExists(id))
                 {
                     return NotFound();
                 }
@@ -75,37 +73,37 @@ namespace TranspotationTicketBooking.Controllers
             return NoContent();
         }
 
-        // POST: api/Route
+        // POST: api/Tickets
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPost]
-        public async Task<ActionResult<Route>> PostRoute(Route route)
+        public async Task<ActionResult<Ticket>> PostTicket(Ticket ticket)
         {
-            _context.Route.Add(route);
+            _context.Ticket.Add(ticket);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetRoute", new { id = route.RId }, route);
+            return CreatedAtAction("GetTicket", new { id = ticket.TId }, ticket);
         }
 
-        // DELETE: api/Route/5
+        // DELETE: api/Tickets/5
         [HttpDelete("{id}")]
-        public async Task<ActionResult<Route>> DeleteRoute(long id)
+        public async Task<ActionResult<Ticket>> DeleteTicket(long id)
         {
-            var route = await _context.Route.FindAsync(id);
-            if (route == null)
+            var ticket = await _context.Ticket.FindAsync(id);
+            if (ticket == null)
             {
                 return NotFound();
             }
 
-            _context.Route.Remove(route);
+            _context.Ticket.Remove(ticket);
             await _context.SaveChangesAsync();
 
-            return route;
+            return ticket;
         }
 
-        private bool RouteExists(long id)
+        private bool TicketExists(long id)
         {
-            return _context.Route.Any(e => e.RId == id);
+            return _context.Ticket.Any(e => e.TId == id);
         }
     }
 }

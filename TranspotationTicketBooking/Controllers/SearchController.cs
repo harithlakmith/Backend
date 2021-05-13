@@ -15,7 +15,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace TranspotationTicketBooking.Controllers
 {
-    [Route("[controller]")]
+    [Route("api/[controller]")]
    // [Authorize(Roles = "Passenger")]
     [ApiController]
     public class SearchController : ControllerBase
