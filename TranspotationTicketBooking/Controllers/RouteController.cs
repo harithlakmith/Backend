@@ -10,7 +10,7 @@ using TranspotationTicketBooking.Models;
 
 namespace TranspotationTicketBooking.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("[controller]")]
     [Authorize(Roles = "BusController , Administrator")]
     [ApiController]
     public class RouteController : ControllerBase
@@ -102,6 +102,31 @@ namespace TranspotationTicketBooking.Controllers
 
             return route;
         }
+
+        [HttpPost("RouteUpdate")]  // Route/RouteUpdate
+        public async Task<IActionResult> UpdateRoute(RouteUpdateModel userModel)
+        {
+
+            var route = _context.Route.Where(x => x.RNum == userModel.RNum).FirstOrDefault();
+
+            if (route == null)
+            {
+                return NotFound();
+            }
+
+            route.Distance = userModel.Distance;
+            route.Duration = userModel.Duration;
+
+
+
+            _context.Route.Update(route);
+
+            _context.SaveChanges();
+
+            //return StatusCode(201);
+            return CreatedAtAction("GetRoute", new { id = route.RId }, route);
+        }
+
 
         private bool RouteExists(long id)
         {

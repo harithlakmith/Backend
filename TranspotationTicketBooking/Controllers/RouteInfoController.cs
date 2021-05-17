@@ -10,8 +10,8 @@ using TranspotationTicketBooking.Models;
 
 namespace TranspotationTicketBooking.Controllers
 {
-    [Route("api/[controller]")]
-    //[Authorize(Roles = "BusController , Administrator")]
+    [Route("[controller]")]
+    [Authorize(Roles = "BusController , Administrator")]
     [ApiController]
     public class RouteInfoController : ControllerBase
     {
@@ -133,9 +133,36 @@ namespace TranspotationTicketBooking.Controllers
             return routeInfo;
         }
 
+        [HttpPost("RouteInfoUpdate")]  // RouteInfo/RouteInfoUpdate
+        public async Task<IActionResult> UpdateRouteInfo(RouteInfoUpdate userModel)
+        {
+
+            var routeinfo = _context.RouteInfo.Where(x => x.RId == userModel.RId && x.HoltName == userModel.HoltName).FirstOrDefault();
+
+            if (routeinfo == null)
+            {
+                return NotFound();
+            }
+
+            routeinfo.Price = userModel.Price;
+            routeinfo.Time = userModel.Time;
+            routeinfo.Distance = userModel.Distance;
+
+
+
+            _context.RouteInfo.Update(routeinfo);
+
+            _context.SaveChanges();
+
+            return StatusCode(201);
+           
+        }
+
+
         private bool RouteInfoExists(int id)
         {
             return _context.RouteInfo.Any(e => e.Id == id);
         }
+
     }
 }
