@@ -10,8 +10,8 @@ using TranspotationTicketBooking.Models;
 
 namespace TranspotationTicketBooking.Controllers
 {
-    [Route("[controller]")]
-    [Authorize(Roles = "BusController , Administrator")]
+    [Route("api/[controller]")]
+   // [Authorize(Roles = "BusController , Administrator")]
     [ApiController]
     public class RouteInfoController : ControllerBase
     {
