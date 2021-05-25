@@ -10,8 +10,8 @@ using TranspotationTicketBooking.Models;
 namespace TranspotationTicketBooking.Migrations
 {
     [DbContext(typeof(TicketBookingDBContext))]
-    [Migration("20210318045002_new")]
-    partial class @new
+    [Migration("20210525092853_first")]
+    partial class first
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -42,22 +42,22 @@ namespace TranspotationTicketBooking.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "1d515c75-ea84-402c-9f99-d69a10fa6e18",
-                            ConcurrencyStamp = "6c4fb945-2b25-49d4-9d58-87482fc544bc",
+                            Id = "ef9fb401-58bb-4783-b10f-4f9a94c556da",
+                            ConcurrencyStamp = "82d42d5f-368d-4cf1-b399-e3018d87bff9",
                             Name = "Passenger",
                             NormalizedName = "PASSENGER"
                         },
                         new
                         {
-                            Id = "35b7a21a-e9bb-4c4b-9e15-1a4efaa7a5f6",
-                            ConcurrencyStamp = "bc320a50-c09b-400c-904d-71e95c06576e",
+                            Id = "27f2fbdd-8afc-441f-916d-9b3ba720b8a1",
+                            ConcurrencyStamp = "64ddd2bb-c017-4e73-babd-99bc5a92d927",
                             Name = "BusController",
                             NormalizedName = "BUSCONTROLLER"
                         },
                         new
                         {
-                            Id = "99266620-5f56-4654-bf3b-a17aff424bc3",
-                            ConcurrencyStamp = "fb6ba838-5546-4617-94db-9d6581ef1753",
+                            Id = "5b54c097-d8de-429e-85c6-5ab8af8a1a65",
+                            ConcurrencyStamp = "a74dc0eb-52a2-4cb1-a136-602b4c341db4",
                             Name = "Administrator",
                             NormalizedName = "ADMINISTRATOR"
                         });
@@ -99,15 +99,10 @@ namespace TranspotationTicketBooking.Migrations
                     b.Property<int>("MaxSeats")
                         .HasColumnType("int");
 
-                    b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(450)");
-
                     b.Property<int>("Verified")
                         .HasColumnType("int");
 
                     b.HasKey("BusNo");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("BusInfo");
                 });
@@ -134,15 +129,10 @@ namespace TranspotationTicketBooking.Migrations
                     b.Property<int>("Tp")
                         .HasColumnType("int");
 
-                    b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(450)");
-
                     b.Property<int>("Verified")
                         .HasColumnType("int");
 
                     b.HasKey("PId");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("Passenger");
                 });
@@ -262,6 +252,9 @@ namespace TranspotationTicketBooking.Migrations
                     b.Property<int>("PStatus")
                         .HasColumnType("int");
 
+                    b.Property<int>("Price")
+                        .HasColumnType("int");
+
                     b.Property<long>("SId")
                         .HasColumnType("bigint");
 
@@ -329,6 +322,9 @@ namespace TranspotationTicketBooking.Migrations
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("Tp")
+                        .HasColumnType("int");
+
                     b.Property<bool>("TwoFactorEnabled")
                         .HasColumnType("bit");
 
@@ -338,27 +334,6 @@ namespace TranspotationTicketBooking.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Users");
-                });
-
-            modelBuilder.Entity("TranspotationTicketBooking.Models.BusInfo", b =>
-                {
-                    b.HasOne("TranspotationTicketBooking.Models.User", null)
-                        .WithMany("BusInfos")
-                        .HasForeignKey("UserId");
-                });
-
-            modelBuilder.Entity("TranspotationTicketBooking.Models.Passenger", b =>
-                {
-                    b.HasOne("TranspotationTicketBooking.Models.User", null)
-                        .WithMany("Passengers")
-                        .HasForeignKey("UserId");
-                });
-
-            modelBuilder.Entity("TranspotationTicketBooking.Models.User", b =>
-                {
-                    b.Navigation("BusInfos");
-
-                    b.Navigation("Passengers");
                 });
 #pragma warning restore 612, 618
         }

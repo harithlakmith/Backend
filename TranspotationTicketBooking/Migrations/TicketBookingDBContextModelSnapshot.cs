@@ -40,22 +40,22 @@ namespace TranspotationTicketBooking.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "5c4343fa-e1ee-445b-90f2-7b55f4be2c3e",
-                            ConcurrencyStamp = "66082839-5ad7-4ad2-8c86-b7b7c8e5d2fc",
+                            Id = "ef9fb401-58bb-4783-b10f-4f9a94c556da",
+                            ConcurrencyStamp = "82d42d5f-368d-4cf1-b399-e3018d87bff9",
                             Name = "Passenger",
                             NormalizedName = "PASSENGER"
                         },
                         new
                         {
-                            Id = "a8ce8944-8633-4f11-a779-014196c66bf8",
-                            ConcurrencyStamp = "5d00e388-be00-4ff5-aeda-c9504ba10c7f",
+                            Id = "27f2fbdd-8afc-441f-916d-9b3ba720b8a1",
+                            ConcurrencyStamp = "64ddd2bb-c017-4e73-babd-99bc5a92d927",
                             Name = "BusController",
                             NormalizedName = "BUSCONTROLLER"
                         },
                         new
                         {
-                            Id = "c84fbead-c1b5-485c-9042-33ebedbc79b1",
-                            ConcurrencyStamp = "2824074b-3de6-40f3-b98e-05fe853c0513",
+                            Id = "5b54c097-d8de-429e-85c6-5ab8af8a1a65",
+                            ConcurrencyStamp = "a74dc0eb-52a2-4cb1-a136-602b4c341db4",
                             Name = "Administrator",
                             NormalizedName = "ADMINISTRATOR"
                         });
@@ -97,15 +97,10 @@ namespace TranspotationTicketBooking.Migrations
                     b.Property<int>("MaxSeats")
                         .HasColumnType("int");
 
-                    b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(450)");
-
                     b.Property<int>("Verified")
                         .HasColumnType("int");
 
                     b.HasKey("BusNo");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("BusInfo");
                 });
@@ -132,15 +127,10 @@ namespace TranspotationTicketBooking.Migrations
                     b.Property<int>("Tp")
                         .HasColumnType("int");
 
-                    b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(450)");
-
                     b.Property<int>("Verified")
                         .HasColumnType("int");
 
                     b.HasKey("PId");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("Passenger");
                 });
@@ -260,6 +250,9 @@ namespace TranspotationTicketBooking.Migrations
                     b.Property<int>("PStatus")
                         .HasColumnType("int");
 
+                    b.Property<int>("Price")
+                        .HasColumnType("int");
+
                     b.Property<long>("SId")
                         .HasColumnType("bigint");
 
@@ -339,31 +332,6 @@ namespace TranspotationTicketBooking.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Users");
-                });
-
-            modelBuilder.Entity("TranspotationTicketBooking.Models.BusInfo", b =>
-                {
-                    b.HasOne("TranspotationTicketBooking.Models.User", "User")
-                        .WithMany("BusInfo")
-                        .HasForeignKey("UserId");
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("TranspotationTicketBooking.Models.Passenger", b =>
-                {
-                    b.HasOne("TranspotationTicketBooking.Models.User", "User")
-                        .WithMany("Passenger")
-                        .HasForeignKey("UserId");
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("TranspotationTicketBooking.Models.User", b =>
-                {
-                    b.Navigation("BusInfo");
-
-                    b.Navigation("Passenger");
                 });
 #pragma warning restore 612, 618
         }
