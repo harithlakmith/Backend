@@ -41,20 +41,20 @@ namespace TranspotationTicketBooking.Controllers
         public async Task<ActionResult<IEnumerable<Ticket>>> GeTicket(long id)
         {
             // var ticket = await _context.Ticket.FindAsync(id);
-            var ticket = (from s in _context.Ticket.Where(s => s.PId == id)
+            var ticket = (from t in _context.Ticket.Where(t => t.PId == id)
                           select new Ticket()
                           {
-                              TId = s.TId,
-                              SId = s.SId,
-                              From = s.From,
-                              FromHalt = s.FromHalt,
-                              PId = s.PId,
-                              NoOfSeats = s.NoOfSeats,
-                              PStatus = s.PStatus,
-                              Date = s.Date,
-                              Price = s.Price,
-                              To = s.To,
-                              ToHalt = s.ToHalt
+                              TId = t.TId,
+                              SId = t.SId,
+                              From = t.From,
+                              FromHalt = t.FromHalt,
+                              PId = t.PId,
+                              NoOfSeats = t.NoOfSeats,
+                              PStatus = t.PStatus,
+                              Date = t.Date,
+                              Price = t.Price,
+                              To = t.To,
+                              ToHalt = t.ToHalt
 
                           }).ToList();
 
