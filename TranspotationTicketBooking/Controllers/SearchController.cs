@@ -163,10 +163,6 @@ namespace TranspotationTicketBooking.Controllers
           //  return sessionSelectedExt2;
 
 
-
-
-            List<SessionwithTicket> tics = sessionSelectedExt2.ToList();
-
             ////////////////////////////////////////////////////////////////////
             
         List<SessionwithTicket> FilteredSessions = sessionSelectedExt2.ToList();
@@ -334,7 +330,6 @@ namespace TranspotationTicketBooking.Controllers
 
 
             List<SessionwithTicket> FilteredSessionsCheck = sessionSelectedExt2.ToList();
-            // List<AllList> AllList = new List<AllList>();
             List<SendList> FinalSendLists = new List<SendList>();
             List<SendList> SendLists = new List<SendList>();
 
@@ -376,35 +371,37 @@ namespace TranspotationTicketBooking.Controllers
                 canBook = SesSeat - bookedSeat + AvSeat;
 
 
-                
-
-                SendLists.Add(new SendList()
+                if (canBook > 0)
                 {
-                    SId = FSession.SId,
-                    BusNo = FSession.BusNo,
-                    RId = FSession.RId,
-                    RNum = FSession.RNum,
-                    RouteStartHolt = FSession.RouteStartHolt,
-                    RouteStopHolt = FSession.RouteStopHolt,
-                    FromHolt = from_,
-                    ToHolt = to_,
-                    FromHoltId = FSession.FromHoltId,
-                    ToHoltId = FSession.ToHoltId,
-                    TicketPrice = FSession.TicketPrice,
-                    ArrivedTime = FSession.ArrivedTime,
-                    Duration = FSession.Duration,
-                    StartTime = FSession.StartTime,
-                    Date = FSession.Date,
-                    Seats = FSession.Seats,
-                    Check = FSession.Check,
-                    FreeSeats = canBook
-                });
+
+                    SendLists.Add(new SendList()
+                    {
+                        SId = FSession.SId,
+                        BusNo = FSession.BusNo,
+                        RId = FSession.RId,
+                        RNum = FSession.RNum,
+                        RouteStartHolt = FSession.RouteStartHolt,
+                        RouteStopHolt = FSession.RouteStopHolt,
+                        FromHolt = from_,
+                        ToHolt = to_,
+                        FromHoltId = FSession.FromHoltId,
+                        ToHoltId = FSession.ToHoltId,
+                        TicketPrice = FSession.TicketPrice,
+                        ArrivedTime = FSession.ArrivedTime,
+                        Duration = FSession.Duration,
+                        StartTime = FSession.StartTime,
+                        Date = FSession.Date,
+                        Seats = FSession.Seats,
+                        Check = FSession.Check,
+                        FreeSeats = canBook
+                    });
+                }
 
             }
 
                return SendLists;
              
-         ///////////////////////////////////////////////////////////////////
+        
 
 
         }
@@ -437,71 +434,6 @@ namespace TranspotationTicketBooking.Controllers
             public ICollection<MergeList> FromTo { get; set; }
 
         }
-
-
-
-
-
-
-
-
-
-
-        //////////////////////////////////////////////////////////////////////////
-
-        
-        /*foreach (var vall in BookedTicketList)
-                    {
-                       
-                        if ((vall.From > sslst.FromHoltId
-                                && vall.From > sslst.ToHoltId)
-                            || (vall.To < sslst.FromHoltId 
-                                 && vall.To < sslst.ToHoltId))
-                        {
-                            
-
-                            sslst.Check = 1;
-                            break;
-                         
-                        }
-                        else 
-                        {
-                            sslst.Check = 0;
-                            break;
-                        }
-                        
-                    }*/
-
-
-
-        /*var BookedTicketList =(from tk in _context.Ticket
-                                            select new Ticket()
-                                            {
-                                                TId = tk.TId,
-                                                SId = tk.SId,
-                                                From =tk.From,
-                                                FromHalt = tk.FromHalt,
-                                                To = tk.To,
-                                                ToHalt = tk.ToHalt,
-                                                PId = tk.PId,
-                                                PStatus = tk.PStatus,
-                                                NoOfSeats = tk.NoOfSeats,
-                                                Date = tk.Date
-                                              
-                                            }).ToList();*/
-
-
-        /* if (FT.from <= Int32.Parse(ti.To) && (FT.to >= Int32.Parse(ti.From)))
-                                  {
-                                      xv = 0; // crossed
-
-                                  }
-                              else
-                                  {
-                                      if (xv == 1) { xv = 1; } // not crossed
-                                  }*/
-
-
 
 
 
