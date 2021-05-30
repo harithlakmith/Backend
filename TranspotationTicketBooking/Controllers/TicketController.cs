@@ -36,10 +36,40 @@ namespace TranspotationTicketBooking.Controllers
         }
 
         // GET: api/Ticket/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Ticket>> GetTicket(long id)
+        [HttpGet("def/{id}")]
+        public async Task<ActionResult<Ticket>> GetTicketDef(long id)
         {
             var ticket = await _context.Ticket.FindAsync(id);
+
+            if (ticket == null)
+            {
+                return NotFound();
+            }
+
+            return ticket;
+        }
+
+        // GET: api/Ticket
+        [HttpGet("{id}")]
+        public async Task<ActionResult<IEnumerable<Ticket>>> GeTicket(long id)
+        {
+            // var ticket = await _context.Ticket.FindAsync(id);
+            var ticket = (from t in _context.Ticket.Where(t => t.PId == id)
+                          select new Ticket()
+                          {
+                              TId = t.TId,
+                              SId = t.SId,
+                              From = t.From,
+                              FromHalt = t.FromHalt,
+                              PId = t.PId,
+                              NoOfSeats = t.NoOfSeats,
+                              PStatus = t.PStatus,
+                              Date = t.Date,
+                              Price = t.Price,
+                              To = t.To,
+                              ToHalt = t.ToHalt
+
+                          }).ToList();
 
             if (ticket == null)
             {
@@ -118,6 +148,10 @@ namespace TranspotationTicketBooking.Controllers
         [HttpPost]
         public async Task<ActionResult<Ticket>> PostTicket(Ticket ticket)
         {
+
+
+
+
             _context.Ticket.Add(ticket);
             await _context.SaveChangesAsync();
 

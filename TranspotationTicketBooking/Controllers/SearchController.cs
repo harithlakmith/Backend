@@ -35,7 +35,7 @@ namespace TranspotationTicketBooking.Controllers
 
 
         [HttpGet("{SearchTicket}")]
-        public async Task<ActionResult<IEnumerable<TicketInfo>>> GetTownList(DateTime date, string from_, string to_)
+        public async Task<ActionResult<IEnumerable<seatAll>>> GetTownList(DateTime date, string from_, string to_)
         {
 
             //var sessions = await _context.Session.Where(s => s.Date == date).ToListAsync();
@@ -131,12 +131,151 @@ namespace TranspotationTicketBooking.Controllers
 
                                       }).ToList();
 
+            var sessionSelectedExt2 = (from ssl in sessionSelected
+                                       join rt in _context.Route on ssl.RId equals rt.RId
+                                       select new SessionwithTicket()
+                                       {
+                                           SId = ssl.SId,
+                                           BusNo = ssl.BusNo,
+                                           RId = ssl.RId,
+                                           RNum = rt.RNum,
+                                           RouteStartHolt = rt.StartHolt,
+                                           RouteStopHolt = rt.StopHolt,
+                                           FromHolt = from_,
+                                           ToHolt = to_,
+                                           FromHoltId = ssl.FromHoltId,
+                                           ToHoltId = ssl.ToHoltId,
+                                           TicketPrice = ssl.TicketPrice,
+                                           ArrivedTime = ssl.ArrivedTime,
+                                           Duration = ssl.Duration,
+                                           StartTime = ssl.StartTime,
+                                           Date = ssl.Date,
+                                           Seats = ssl.Seats,
+                                           Check = ssl.Check,
+                                           Tickets = _context.Ticket.Where(t => t.SId == ssl.SId).ToList()
+
+                                       }).ToList();
+
 
             var SessionList = sessionSelectedExt.Where(s => s.Seats > _context.Ticket.Where(t => t.SId == s.SId).Count()).ToList();
 
 
-            return SessionList;
+           // return sessionSelectedExt2;
 
+            var reTicket = (from ssl in sessionSelectedExt
+                            join s in _context.Ticket on ssl.SId equals s.SId
+                            select new Ticket()
+                            {
+                                TId = s.TId,
+                                SId = s.SId,
+                                From = s.From,
+                                FromHalt = s.FromHalt,
+                                PId = s.PId,
+                                NoOfSeats = s.NoOfSeats,
+                                PStatus = s.PStatus,
+                                Date = s.Date,
+                                Price = s.Price,
+                                To = s.To,
+                                ToHalt = s.ToHalt
+
+                            }).ToList();
+
+
+
+            List<SessionwithTicket> tics = sessionSelectedExt2.ToList();
+
+            List<seatAll> seatAll = new List<seatAll>();
+         
+            foreach (var tic in tics) {  // retrives session for date to and from
+                                         //   seatAvl[] seatAv = new seatAvl[tic.Seats];
+                List<seatAvl> seatAv = new List<seatAvl>();
+                List<seAVL> selist = new List<seAVL>();
+                
+                int s = 0;
+                foreach (var ti in tic.Tickets)
+                {   //related ticekts to session
+                    List<seAVL> selistTEMP = new List<seAVL>();
+                    List<seAVL> selistTEMP2 = new List<seAVL>();
+                    if (!seatAv.Any())
+                    {
+
+                        selist.Add( new seAVL() {TId=ti.TId, to = Int32.Parse(ti.To) , from = Int32.Parse(ti.From)}) ;
+                        seatAv.Add(new seatAvl() { seat = 0, FromTo = selist });
+
+                    }
+                    else 
+                    { 
+
+                            int freeSeat = 0;
+                            int countSeats = 0;
+                            int SC = 0;
+                            bool isSpace = false;
+                        
+                        int xv = 1;
+                            int c = 0;
+
+
+                        foreach (var SAv in seatAv)  //inside seat info array
+                        {
+                            int st = SAv.seat;
+                            foreach (var FT in SAv.FromTo) // loop inside one seat
+                            {
+
+                                if (FT.from <= Int32.Parse(ti.To) && (FT.to >= Int32.Parse(ti.From)))
+                                    {
+                                        xv = 0; // crossed
+                                   
+                                    }
+                                else
+                                    {
+                                        if (xv == 1) { xv = 1; } // not crossed
+                                    }
+                                c++;
+                                selistTEMP.Add(new seAVL() {TId=FT.TId, from = FT.from, to = FT.to });
+                            }
+
+
+
+                        }
+
+
+                        if (xv == 1)
+                        {
+                            selistTEMP.Add(new seAVL() { TId = ti.TId, from = Int32.Parse(ti.From), to = Int32.Parse(ti.To) });
+                            seatAv.RemoveAt(SC);
+                            //  seatAv.Insert(SC, new seatAvl() { seat = s, FromTo = selistTEMP });
+                            seatAv.Add(new seatAvl() { seat = s, FromTo = selistTEMP });
+
+                           // selistTEMP.Clear();
+
+                        }
+
+                        if (xv == 0)
+                        {
+                            // foreach (var FTA in SAv.FromTo) // loop inside one seat
+
+                            selistTEMP2.Add(new seAVL() { TId = ti.TId, from = Int32.Parse(ti.From), to = Int32.Parse(ti.To) });
+                            seatAv.Add(new seatAvl() { seat = s, FromTo = selistTEMP2 });
+                          //  selistTEMP2.Clear();
+                        }
+
+
+
+                        //selistTEMP.Clear();
+                        //selistTEMP2.Clear();
+                        s++;
+                    }
+
+                    //s++;
+                }
+              
+                seatAll.Add(new seatAll() {SId = tic.SId, ses = seatAv });
+
+            }
+
+
+            return seatAll;
+          
 
             // List<TicketInfo> SesList = new List<TicketInfo>();
             // SesList = SessionList;
@@ -144,6 +283,35 @@ namespace TranspotationTicketBooking.Controllers
 
         }
 
+        public int isCrossed(int T_From, int T_To, int S_From, int S_To) {
+            if ((S_From <= T_To) && (S_To >= T_From))
+            {
+                return 0; // crossed
+
+            }
+            else
+            {
+                return 1; // not crossed
+            }
+
+           
+        }
+        public class seatAll
+        {
+            public long SId { get; set; }
+            public ICollection<seatAvl> ses { get; set; }
+        }
+        public class seatAvl { 
+            public int seat { get; set; }
+            public ICollection<seAVL> FromTo { get; set; }
+        }
+        public class seAVL
+        {
+            public long TId { get; set; }
+            public int from { get; set; }
+            public int to { get; set; }
+           
+        }
         /*foreach (var vall in BookedTicketList)
                     {
                        
