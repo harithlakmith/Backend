@@ -35,7 +35,7 @@ namespace TranspotationTicketBooking.Controllers
 
 
         [HttpGet("{SearchTicket}")]
-        public async Task<ActionResult<IEnumerable<seatAll>>> GetTownList(DateTime date, string from_, string to_)
+        public async Task<ActionResult<IEnumerable<AllList>>> GetTownList(DateTime date, string from_, string to_)
         {
 
             //var sessions = await _context.Session.Where(s => s.Date == date).ToListAsync();
@@ -184,6 +184,120 @@ namespace TranspotationTicketBooking.Controllers
 
             List<SessionwithTicket> tics = sessionSelectedExt2.ToList();
 
+            ////////////////////////////////////////////////////////////////////
+            
+        List<SessionwithTicket> FilteredSessions = sessionSelectedExt2.ToList();
+            List<AllList> AllList = new List<AllList>();
+
+            foreach (var FilteredSession in FilteredSessions) {
+
+                List<MergeList> MergeList = new List<MergeList>();
+
+                foreach (var Ticket in FilteredSession.Tickets) {
+                    
+                    List<TicketId> TIds = new List<TicketId>();
+                    
+                    if (!MergeList.Any())
+                    {
+                        TIds.Add(new TicketId() { TId = Ticket.TId });
+                        MergeList.Add(new MergeList() { TIds=TIds, from = Int32.Parse(Ticket.From), to = Int32.Parse(Ticket.To) });
+                    }
+                    else
+                    {
+                        int countMergeList = 0;
+                        int TempFrom=0;
+                        int TempTo=0;
+                        int operation=0;
+                        foreach (var ItemMergeList in MergeList) 
+                        {
+                            if (Int32.Parse(Ticket.To) == ItemMergeList.from)
+                            {
+                                foreach (var TicIds in ItemMergeList.TIds)
+                                {
+                                    TIds.Add(new TicketId() { TId = TicIds.TId });
+                                }
+                                TIds.Add(new TicketId() { TId = Ticket.TId });
+                                TempFrom = ItemMergeList.from;
+                                TempTo = ItemMergeList.to;
+
+                                operation = 1;
+                            }
+                            else if (Int32.Parse(Ticket.From) == ItemMergeList.to)
+                            {
+                                foreach (var TicIds in ItemMergeList.TIds)
+                                {
+                                    TIds.Add(new TicketId() { TId = TicIds.TId });
+                                }
+                                TIds.Add(new TicketId() { TId = Ticket.TId });
+                                TempFrom = ItemMergeList.from;
+                                TempTo = ItemMergeList.to;
+
+                                operation = 2;
+                            }
+                            else
+                            {
+                                TIds.Add(new TicketId() { TId = Ticket.TId });
+
+                                operation = 3;
+
+                            }
+
+                            countMergeList++;
+                        }
+
+                        if (operation == 1)
+                        {
+
+                            MergeList.RemoveAt(countMergeList);
+
+                            MergeList.Insert(countMergeList, new MergeList()
+                            {
+                                TIds = TIds,
+                                from = Int32.Parse(Ticket.From),
+                                to = TempTo
+                            });
+                        }
+                        else if (operation == 2)
+                        {
+
+                            MergeList.RemoveAt(countMergeList);
+
+                            MergeList.Insert(countMergeList, new MergeList() { TIds = TIds, from = TempFrom, to = Int32.Parse(Ticket.To) });
+                        }
+                        else if(operation == 3)
+                        {
+                            MergeList.Add(new MergeList()
+                            {
+                                TIds = TIds,
+                                from = Int32.Parse(Ticket.From),
+                                to = Int32.Parse(Ticket.To)
+                            });
+                        }
+
+
+
+                    }
+
+
+                }
+                AllList.Add(new AllList() { List = MergeList });
+               
+            
+            }
+
+            return AllList;
+
+
+
+
+
+
+
+
+
+
+            ///////////////////////////////////////////////////////////////////
+
             List<seatAll> seatAll = new List<seatAll>();
          
             foreach (var tic in tics) {  // retrives session for date to and from
@@ -194,8 +308,7 @@ namespace TranspotationTicketBooking.Controllers
                 int s = 0;
                 foreach (var ti in tic.Tickets)
                 {   //related ticekts to session
-                    List<seAVL> selistTEMP = new List<seAVL>();
-                    List<seAVL> selistTEMP2 = new List<seAVL>();
+                   
                     if (!seatAv.Any())
                     {
 
@@ -210,52 +323,49 @@ namespace TranspotationTicketBooking.Controllers
                             int countSeats = 0;
                             int SC = 0;
                             bool isSpace = false;
-                        
+                        List<seAVL> selistTEMP = new List<seAVL>();
+                        List<seAVL> selistTEMP2 = new List<seAVL>();
                         int xv = 1;
-                            int c = 0;
-
-
+                        bool crs = true;
+                        int c = 0;
+                        int st = 0;
+                        bool ok = false;
                         foreach (var SAv in seatAv)  //inside seat info array
                         {
-                            int st = SAv.seat;
-                            foreach (var FT in SAv.FromTo) // loop inside one seat
+                            crs = true;
+                            selistTEMP.Clear();
+                            st = SAv.seat;
+                            foreach (var FT in SAv.FromTo) // loop inside one seat FROMTO
                             {
-
-                                if (FT.from <= Int32.Parse(ti.To) && (FT.to >= Int32.Parse(ti.From)))
-                                    {
-                                        xv = 0; // crossed
-                                   
-                                    }
-                                else
-                                    {
-                                        if (xv == 1) { xv = 1; } // not crossed
-                                    }
+                                crs = crs && isCrossed(Int32.Parse(ti.From), Int32.Parse(ti.To), FT.from, FT.to);
+                               
+                             
                                 c++;
                                 selistTEMP.Add(new seAVL() {TId=FT.TId, from = FT.from, to = FT.to });
                             }
 
-
-
+                            if (crs) { ok = true; break; }
+                            countSeats++;
                         }
 
 
-                        if (xv == 1)
+                        if (crs)
                         {
                             selistTEMP.Add(new seAVL() { TId = ti.TId, from = Int32.Parse(ti.From), to = Int32.Parse(ti.To) });
-                            seatAv.RemoveAt(SC);
+                            seatAv.RemoveAt(st);
                             //  seatAv.Insert(SC, new seatAvl() { seat = s, FromTo = selistTEMP });
-                            seatAv.Add(new seatAvl() { seat = s, FromTo = selistTEMP });
+                            seatAv.Add(new seatAvl() { seat = st, FromTo = selistTEMP });
 
                            // selistTEMP.Clear();
 
                         }
 
-                        if (xv == 0)
+                        if (!ok)
                         {
                             // foreach (var FTA in SAv.FromTo) // loop inside one seat
 
                             selistTEMP2.Add(new seAVL() { TId = ti.TId, from = Int32.Parse(ti.From), to = Int32.Parse(ti.To) });
-                            seatAv.Add(new seatAvl() { seat = s, FromTo = selistTEMP2 });
+                            seatAv.Add(new seatAvl() { seat = st+1, FromTo = selistTEMP2 });
                           //  selistTEMP2.Clear();
                         }
 
@@ -274,7 +384,7 @@ namespace TranspotationTicketBooking.Controllers
             }
 
 
-            return seatAll;
+          //  return seatAll;
           
 
             // List<TicketInfo> SesList = new List<TicketInfo>();
@@ -282,19 +392,62 @@ namespace TranspotationTicketBooking.Controllers
             //return SessionList;
 
         }
+        ///////////////////////////////////////////////////////
+        public class AllList
+        {
+            public ICollection<MergeList> List { get; set; }
+        }
+            public class MergeList
+        {
+            public ICollection<TicketId> TIds { get; set; }
+            public int from { get; set; }
+            public int to { get; set; }
+        }
 
-        public int isCrossed(int T_From, int T_To, int S_From, int S_To) {
+        public class TicketId
+        {
+            public long TId { get; set; }
+            
+        }
+
+        public class FinalList
+        {
+            public int seat { get; set; }
+            public ICollection<MergeList> FromTo { get; set; }
+
+        }
+
+
+
+
+
+
+
+
+
+
+        //////////////////////////////////////////////////////////////////////////
+
+        public bool isCrossed(int T_From, int T_To, int S_From, int S_To) {
             if ((S_From <= T_To) && (S_To >= T_From))
             {
-                return 0; // crossed
+                return false; // crossed
 
             }
             else
             {
-                return 1; // not crossed
+                return true; // not crossed
             }
+           /* if ((S_From >= T_To) ^ (S_To <= T_From))
+            {
+                return true; // crossed
 
-           
+            }
+            else
+            {
+                return false; // not crossed
+            }*/
+
         }
         public class seatAll
         {
@@ -353,7 +506,15 @@ namespace TranspotationTicketBooking.Controllers
                                             }).ToList();*/
 
 
+        /* if (FT.from <= Int32.Parse(ti.To) && (FT.to >= Int32.Parse(ti.From)))
+                                  {
+                                      xv = 0; // crossed
 
+                                  }
+                              else
+                                  {
+                                      if (xv == 1) { xv = 1; } // not crossed
+                                  }*/
 
 
 
