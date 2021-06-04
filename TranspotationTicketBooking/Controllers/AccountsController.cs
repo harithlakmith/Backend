@@ -160,7 +160,7 @@ namespace TranspotationTicketBooking.Controllers
 
             user.FirstName = userModel.FirstName;
             user.LastName = userModel.LastName;
-            user.PasswordHash = _userManager.PasswordHasher.HashPassword(user , userModel.Password);
+            //user.PasswordHash = _userManager.PasswordHasher.HashPassword(user , userModel.Password);
             user.Tp = userModel.Tp;
             passenger.FirstName = userModel.FirstName;
             passenger.LastName = userModel.LastName;
@@ -233,6 +233,31 @@ namespace TranspotationTicketBooking.Controllers
                 return Ok(result.Errors);
             }
            
+            return StatusCode(201);
+        }
+
+        [Authorize(Roles = "Passenger , Administrator")]
+        [HttpPost("PassengerPasswordUpdate")]  // api/Accounts/PasswordUpdate
+        public async Task<IActionResult> UpdatePassengerPassword(PassengerPasswordUpdate userModel)
+        {
+            var user = await _userManager.FindByEmailAsync(userModel.Email);
+            //var user = db.Users.Where(x => x.BusNo == userModel.BusNo).FirstOrDefault();
+
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            user.PasswordHash = _userManager.PasswordHasher.HashPassword(user, userModel.NewPassword);
+
+
+            var result = await _userManager.UpdateAsync(user);
+
+            if (!result.Succeeded)
+            {
+                return Ok(result.Errors);
+            }
+
             return StatusCode(201);
         }
 
