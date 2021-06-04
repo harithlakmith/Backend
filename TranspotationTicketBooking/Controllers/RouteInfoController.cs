@@ -29,21 +29,34 @@ namespace TranspotationTicketBooking.Controllers
             return await _context.RouteInfo.ToListAsync();
         }
 
+        public class TicketId
+        {
+            public string town { get; set; }
+
+        }
         // GET: RouteInfo/townlist
         [HttpGet("townlist")]
-        public async Task<ActionResult<IEnumerable<SearchTownlist>>> GetTownList()
+        public async Task<ActionResult<ICollection<String>>> GetTownList()
         {
             var townList = (from l in _context.RouteInfo
                             select new SearchTownlist()
                             {
                                 HoltName = l.HoltName
                             }).Distinct().ToList();
+
+            List<string> twn = new List<string>();
+            foreach(var holt in townList)
+            {
+
+                twn.Add(new string(holt.HoltName));
+            }
             if (townList == null)
             {
                 return NotFound();
             }
 
-            return townList;
+            //return townList;
+            return twn;
         }
 
 

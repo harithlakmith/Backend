@@ -175,90 +175,92 @@ namespace TranspotationTicketBooking.Controllers
 
                 foreach (var Ticket in FilteredSession.Tickets)  //inside one ticket
                 {
-                    
-                    List<TicketId> TIds = new List<TicketId>();
-                    
-                    if (!MergeList.Any())
+                    for (int i = 0; i < Ticket.NoOfSeats; i++) //one ti
                     {
-                        TIds.Add(new TicketId() { TId = Ticket.TId });
-                        MergeList.Add(new MergeList() { TIds=TIds, from = Int32.Parse(Ticket.From), to = Int32.Parse(Ticket.To) });
-                    }
-                    else
-                    {
-                        int countMergeList = 0;
-                        int TempFrom=0;
-                        int TempTo=0;
-                        int operation=0;
-                     
-                        foreach (var ItemMergeList in MergeList) 
-                        {
-                            if (Int32.Parse(Ticket.To) == ItemMergeList.from)
-                            {
-                                foreach (var TicIds in ItemMergeList.TIds)
-                                {
-                                    TIds.Add(new TicketId() { TId = TicIds.TId });
-                                }
-                                TIds.Add(new TicketId() { TId = Ticket.TId });
-                                TempFrom = ItemMergeList.from;
-                                TempTo = ItemMergeList.to;
+                        List<TicketId> TIds = new List<TicketId>();
 
-                                operation = 1;
-                                break;
-                            }
-                            else if (Int32.Parse(Ticket.From) == ItemMergeList.to)
-                            {
-                                foreach (var TicIds in ItemMergeList.TIds)
-                                {
-                                    TIds.Add(new TicketId() { TId = TicIds.TId });
-                                }
-                                TIds.Add(new TicketId() { TId = Ticket.TId });
-                                TempFrom = ItemMergeList.from;
-                                TempTo = ItemMergeList.to;
-
-                                operation = 2;
-                                break;
-                            }
-                           
-                            countMergeList++;
-                        }
-
-                        if (operation == 1)
-                        {
-
-                            MergeList.RemoveAt(countMergeList);
-
-                            MergeList.Insert(countMergeList, new MergeList()
-                            {
-                                TIds = TIds,
-                                from = Int32.Parse(Ticket.From),
-                                to = TempTo
-                            });
-                        }
-                        else if (operation == 2)
-                        {
-
-                            MergeList.RemoveAt(countMergeList);
-
-                            MergeList.Insert(countMergeList, new MergeList()
-                            { TIds = TIds, from = TempFrom, to = Int32.Parse(Ticket.To) });
-                        }
-                        else 
+                        if (!MergeList.Any())
                         {
                             TIds.Add(new TicketId() { TId = Ticket.TId });
-                            MergeList.Add(new MergeList()
+                            MergeList.Add(new MergeList() { TIds = TIds, from = Int32.Parse(Ticket.From), to = Int32.Parse(Ticket.To) });
+                        }
+                        else
+                        {
+                            int countMergeList = 0;
+                            int TempFrom = 0;
+                            int TempTo = 0;
+                            int operation = 0;
+
+                            foreach (var ItemMergeList in MergeList)
                             {
-                                TIds = TIds,
-                                from = Int32.Parse(Ticket.From),
-                                to = Int32.Parse(Ticket.To)
-                            });
+                                if (Int32.Parse(Ticket.To) == ItemMergeList.from)
+                                {
+                                    foreach (var TicIds in ItemMergeList.TIds)
+                                    {
+                                        TIds.Add(new TicketId() { TId = TicIds.TId });
+                                    }
+                                    TIds.Add(new TicketId() { TId = Ticket.TId });
+                                    TempFrom = ItemMergeList.from;
+                                    TempTo = ItemMergeList.to;
+
+                                    operation = 1;
+                                    break;
+                                }
+                                else if (Int32.Parse(Ticket.From) == ItemMergeList.to)
+                                {
+                                    foreach (var TicIds in ItemMergeList.TIds)
+                                    {
+                                        TIds.Add(new TicketId() { TId = TicIds.TId });
+                                    }
+                                    TIds.Add(new TicketId() { TId = Ticket.TId });
+                                    TempFrom = ItemMergeList.from;
+                                    TempTo = ItemMergeList.to;
+
+                                    operation = 2;
+                                    break;
+                                }
+
+                                countMergeList++;
+                            }
+
+                            if (operation == 1)
+                            {
+
+                                MergeList.RemoveAt(countMergeList);
+
+                                MergeList.Insert(countMergeList, new MergeList()
+                                {
+                                    TIds = TIds,
+                                    from = Int32.Parse(Ticket.From),
+                                    to = TempTo
+                                });
+                            }
+                            else if (operation == 2)
+                            {
+
+                                MergeList.RemoveAt(countMergeList);
+
+                                MergeList.Insert(countMergeList, new MergeList()
+                                { TIds = TIds, from = TempFrom, to = Int32.Parse(Ticket.To) });
+                            }
+                            else
+                            {
+                                TIds.Add(new TicketId() { TId = Ticket.TId });
+                                MergeList.Add(new MergeList()
+                                {
+                                    TIds = TIds,
+                                    from = Int32.Parse(Ticket.From),
+                                    to = Int32.Parse(Ticket.To)
+                                });
+                            }
+
+
+
                         }
 
-
-
                     }
+                } //end ticket
 
-
-                }
               //  AllList.Add(new AllList() {SessionID = FilteredSession.SId ,List = MergeList });
 
 
