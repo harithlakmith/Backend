@@ -3,10 +3,28 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace TranspotationTicketBooking.Migrations
 {
-    public partial class last1 : Migration
+    public partial class firstone : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.CreateTable(
+                name: "BusInfo",
+                columns: table => new
+                {
+                    BusNo = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    DriverName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    DriverNo = table.Column<int>(type: "int", nullable: false),
+                    CondName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CondNo = table.Column<int>(type: "int", nullable: false),
+                    MaxSeats = table.Column<int>(type: "int", nullable: false),
+                    Email = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Verified = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_BusInfo", x => x.BusNo);
+                });
+
             migrationBuilder.CreateTable(
                 name: "IdentityRole",
                 columns: table => new
@@ -31,6 +49,24 @@ namespace TranspotationTicketBooking.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_IdentityUserRole<string>", x => new { x.UserId, x.RoleId });
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Passenger",
+                columns: table => new
+                {
+                    PId = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    FirstName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    LastName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Tp = table.Column<int>(type: "int", nullable: false),
+                    Email = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Verified = table.Column<int>(type: "int", nullable: false),
+                    Token = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Passenger", x => x.PId);
                 });
 
             migrationBuilder.CreateTable(
@@ -101,7 +137,9 @@ namespace TranspotationTicketBooking.Migrations
                     PId = table.Column<long>(type: "bigint", nullable: false),
                     NoOfSeats = table.Column<int>(type: "int", nullable: false),
                     PStatus = table.Column<int>(type: "int", nullable: false),
-                    Date = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    Price = table.Column<int>(type: "int", nullable: false),
+                    Date = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UserId = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -116,6 +154,8 @@ namespace TranspotationTicketBooking.Migrations
                     FirstName = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     LastName = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     NIC = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    BusNo = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Tp = table.Column<int>(type: "int", nullable: false),
                     UserName = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Email = table.Column<string>(type: "nvarchar(max)", nullable: true),
@@ -136,75 +176,20 @@ namespace TranspotationTicketBooking.Migrations
                     table.PrimaryKey("PK_Users", x => x.Id);
                 });
 
-            migrationBuilder.CreateTable(
-                name: "BusInfo",
-                columns: table => new
-                {
-                    BusNo = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    DriverName = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    DriverNo = table.Column<int>(type: "int", nullable: false),
-                    CondName = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    CondNo = table.Column<int>(type: "int", nullable: false),
-                    MaxSeats = table.Column<int>(type: "int", nullable: false),
-                    Email = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Verified = table.Column<int>(type: "int", nullable: false),
-                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_BusInfo", x => x.BusNo);
-                    table.ForeignKey(
-                        name: "FK_BusInfo_Users_UserId",
-                        column: x => x.UserId,
-                        principalTable: "Users",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Passenger",
-                columns: table => new
-                {
-                    PId = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Tp = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Email = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Verified = table.Column<int>(type: "int", nullable: false),
-                    Token = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Passenger", x => x.PId);
-                    table.ForeignKey(
-                        name: "FK_Passenger_Users_UserId",
-                        column: x => x.UserId,
-                        principalTable: "Users",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
+            migrationBuilder.InsertData(
+                table: "IdentityRole",
+                columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
+                values: new object[] { "b035931e-1642-4099-9534-78a11da3da9a", "5e0c4429-4bd0-4dc8-85c7-ecb9ac8419e2", "Passenger", "PASSENGER" });
 
             migrationBuilder.InsertData(
                 table: "IdentityRole",
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
-                values: new object[,]
-                {
-                    { "baee82d8-bf3c-498c-b73c-033b349d6f4b", "6aa93504-8c0e-46fb-89a4-f05ad93c2784", "Visitor", "VISITOR" },
-                    { "a1829897-31bd-4175-955a-adebc5f7a637", "ebb999ce-29c1-47da-a1b8-9524c4809832", "Passenger", "PASSENGER" },
-                    { "95c0e24e-8963-4286-abab-fcec520a09a4", "d1c034ab-83d7-4bb4-95a4-e6d4e6ecf4b6", "BusController", "BUSCONTROLLER" },
-                    { "c7b6ccf7-60ea-4c2b-95b0-6c6f9aa6a81c", "770c6333-8b7d-4941-9693-918b2fd0ebee", "Administrator", "ADMINISTRATOR" }
-                });
+                values: new object[] { "d6ccc995-e7cf-406f-9516-d4ceb7a95395", "187619cf-90df-4c6d-b818-6b8d4e4a4570", "BusController", "BUSCONTROLLER" });
 
-            migrationBuilder.CreateIndex(
-                name: "IX_BusInfo_UserId",
-                table: "BusInfo",
-                column: "UserId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Passenger_UserId",
-                table: "Passenger",
-                column: "UserId");
+            migrationBuilder.InsertData(
+                table: "IdentityRole",
+                columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
+                values: new object[] { "9dfa361e-bd40-4cb2-83b7-634003a8efda", "6a5887dc-e574-4e4d-a88f-aa4d00897d09", "Administrator", "ADMINISTRATOR" });
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)

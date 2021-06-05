@@ -40,22 +40,22 @@ namespace TranspotationTicketBooking.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "d9c69cbd-5f34-4d40-be05-74441008cd88",
-                            ConcurrencyStamp = "76942597-d7ed-4836-baf8-e7ecfd334da7",
+                            Id = "b035931e-1642-4099-9534-78a11da3da9a",
+                            ConcurrencyStamp = "5e0c4429-4bd0-4dc8-85c7-ecb9ac8419e2",
                             Name = "Passenger",
                             NormalizedName = "PASSENGER"
                         },
                         new
                         {
-                            Id = "cb9e9678-3cb8-4d61-9542-1c1444025392",
-                            ConcurrencyStamp = "0bbc6f3c-4064-4e3d-975c-b6735cf3a1ae",
+                            Id = "d6ccc995-e7cf-406f-9516-d4ceb7a95395",
+                            ConcurrencyStamp = "187619cf-90df-4c6d-b818-6b8d4e4a4570",
                             Name = "BusController",
                             NormalizedName = "BUSCONTROLLER"
                         },
                         new
                         {
-                            Id = "6bf7f621-93a8-4c49-aa6d-fa8f52d9e277",
-                            ConcurrencyStamp = "1c77a837-dd28-489b-8f03-75a52c8663df",
+                            Id = "9dfa361e-bd40-4cb2-83b7-634003a8efda",
+                            ConcurrencyStamp = "6a5887dc-e574-4e4d-a88f-aa4d00897d09",
                             Name = "Administrator",
                             NormalizedName = "ADMINISTRATOR"
                         });
