@@ -43,6 +43,74 @@ namespace TranspotationTicketBooking.Controllers
             return session;
         }
 
+        public class SessionRev
+        {
+         
+            public long SId { get; set; }
+            public string BusNo { get; set; }
+            public long RId { get; set; }
+            public DateTime StartTime { get; set; }
+            public DateTime Date { get; set; }
+            public int Seats { get; set; }
+            public long Rev { get; set; }
+        }
+        [HttpGet("rev")]
+        public async Task<ActionResult<IEnumerable<SessionRev>>> GetSessionWithRev()
+        {
+            //var SessionWithBusno = (_context.Session.Where(s => s.BusNo == id)).ToList();
+            List<Session> sessions = _context.Session.ToList();
+            List<SessionRev> sessionRevs = new List<SessionRev>();
+
+            foreach (var ses in sessions) {
+
+               
+               List<Ticket> Ticket =_context.Ticket.Where(s => s.SId == ses.SId).ToList();
+                var tot = 0;
+                foreach(var tic in Ticket)
+                {
+
+                    tot = tot + tic.NoOfSeats * tic.Price;
+
+                }
+
+                sessionRevs.Add(new SessionRev() { BusNo = ses.BusNo, 
+                    Date = ses.Date, 
+                    RId = ses.RId, 
+                    Seats = ses.Seats, 
+                    SId = ses.SId, 
+                    StartTime = ses.StartTime,
+                    Rev = tot});
+
+
+            }
+
+
+            var SessionRev = (from r in _context.Session
+                                    select new SessionRev()
+                                    {
+
+
+                                        BusNo = r.BusNo,
+                                        Date = r.Date,
+                                        StartTime = r.StartTime,
+                                        RId = r.RId,
+                                        SId = r.SId,
+                                        Seats = r.Seats,
+                                        Rev = 10
+                                        
+                                    }).ToList();
+
+
+
+            if (SessionRev == null)
+            {
+                return NotFound();
+            }
+
+            return sessionRevs;
+        }
+
+
         // GET: api/Session/BusNo/####
         [HttpGet("BusNo/{id}")]
         public async Task<ActionResult<IEnumerable<SessionWithRoute>>> GetSessionWithBusno(string id)

@@ -34,6 +34,7 @@ public class MessageInfo
     public string Telephone { get; set; }
     public string ReachTime { get; set; }
     public string From{ get; set; }
+    public string PayMethod { get; set; }
 
 }
 
@@ -62,7 +63,7 @@ namespace TranspotationTicketBooking.Controllers
         [HttpPost("smsapi")]
         public async Task<ActionResult<string>> PostSmsAsync(MessageInfo messageInfo)
         {
-            string url = "https://app.smsapi.lk/sms/api?action=send-sms&api_key=aGFyaXRoOkhhcml0aDEyMyE=&to="+messageInfo.Telephone+ "&from=Ticketz&sms=%0aYour Ticket %23 " + messageInfo.TId+ "%0a%0a" + messageInfo.Road+"%0a"+messageInfo.Date+"%0aNo of Seats-"+messageInfo.Seats+"%0aPrice- LKR"+messageInfo.Price+ "%0aSession ID  %23 " + messageInfo.SId+ "%0a%0a%2AYour bus (" + messageInfo.BusNo + ") will reach "+messageInfo.From+" at " + messageInfo.ReachTime+ ". Please stay at halt by this time. %0a%0a%3E%3E%3E TICKETZ"; // sample url
+            string url = "https://app.smsapi.lk/sms/api?action=send-sms&api_key=aGFyaXRoOkhhcml0aDEyMyE=&to="+messageInfo.Telephone+ "&from=Ticketz&sms=%0aYour Ticket %23 " + messageInfo.TId+ "  "+messageInfo.PayMethod +"%0a%0a" + messageInfo.Road+"%0a"+messageInfo.Date+"%0aNo of Seats-"+messageInfo.Seats+"%0aPrice- LKR"+messageInfo.Price+ "%0aSession ID  %23 " + messageInfo.SId+ "%0a%0a%2AYour bus (" + messageInfo.BusNo + ") will reach "+messageInfo.From+" at " + messageInfo.ReachTime+ ". Please stay at halt by this time. %0a%0a%3E%3E%3E TICKETZ"; // sample url
             //string url = "https://app.smsapi.lk/sms/api?action=send-sms&api_key=aGFyaXRoOkhhcml0aDEyMyE=&to=" + messageInfo.Telephone + "&from=Ticketz&sms=%0aYour Ticket " + messageInfo.TId;
             using (HttpClient client = new HttpClient())
             {
@@ -75,7 +76,8 @@ namespace TranspotationTicketBooking.Controllers
             [HttpPost]
         public ActionResult Post(Payment payment)
         {
-            var domain = "http://localhost:3000/ticket";
+            // var domain = "http: //localhost:3000/ticket";
+            var domain = "https://ticketz-booking.herokuapp.com/ticket";
             var options = new SessionCreateOptions
             {
                 PaymentMethodTypes = new List<string>
@@ -103,8 +105,8 @@ namespace TranspotationTicketBooking.Controllers
                 ClientReferenceId = payment.TId.ToString(),
                 CustomerEmail = payment.CusEmail,
                 Mode = "payment",
-                SuccessUrl = domain + "?success=true&user=",
-                CancelUrl = domain + "?success=false",
+                SuccessUrl = domain + "?success=true&tid=" + payment.TId.ToString(),
+                CancelUrl = domain + "?success=false&tid=" + payment.TId.ToString(),
             };
             var service = new SessionService();
             Session session = service.Create(options);

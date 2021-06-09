@@ -51,10 +51,10 @@ namespace TranspotationTicketBooking.Controllers
 
         // GET: api/Ticket
         [HttpGet("{id}")]
-        public async Task<ActionResult<IEnumerable<Ticket>>> GeTicket(long id)
+        public async Task<ActionResult<IEnumerable<Ticket>>> GeTicket(string id)
         {
             // var ticket = await _context.Ticket.FindAsync(id);
-            var ticket = (from t in _context.Ticket.Where(t => t.PId == id)
+            var ticket = (from t in _context.Ticket.Where(t => t.UserId == id)
                           select new Ticket()
                           {
                               TId = t.TId,
@@ -113,7 +113,7 @@ namespace TranspotationTicketBooking.Controllers
         // PUT: api/Ticket/5
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
-        [HttpPut("{id}")]
+        [HttpPost("update/{id}")]
         public async Task<IActionResult> PutTicket(long id, Ticket ticket)
         {
             if (id != ticket.TId)
@@ -142,15 +142,63 @@ namespace TranspotationTicketBooking.Controllers
             return NoContent();
         }
 
+        [HttpPost("PaymentUpdate")]  // api/Ticket/PaymentUpdate
+        public async Task<IActionResult> UpdatePayment(PaymentUpdate userModel)
+        {
+
+            var ticket = _context.Ticket.Where(x => x.TId == userModel.TId).FirstOrDefault();
+
+            if (ticket == null)
+            {
+                return NotFound();
+            }
+
+
+            ticket.PStatus = userModel.PStatus;
+
+
+            _context.Ticket.Update(ticket);
+
+            _context.SaveChanges();
+
+            return StatusCode(201);
+        }
+
+
+        [HttpPost("updatePStatus/{id}")]
+        public async Task<IActionResult> PutTicketPStatus(long id, Ticket ticket)
+        {
+            if (id != ticket.TId)
+            {
+                return BadRequest();
+            }
+
+            _context.Entry(ticket).State = EntityState.Modified;
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!TicketExists(id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            return NoContent();
+        }
         // POST: api/Ticket
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPost]
         public async Task<ActionResult<Ticket>> PostTicket(Ticket ticket)
         {
-
-
-
 
             _context.Ticket.Add(ticket);
             await _context.SaveChangesAsync();
